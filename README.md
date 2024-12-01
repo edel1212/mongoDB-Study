@@ -70,6 +70,7 @@
 
 #### 트랜잭션 안정성이 중요한 경우
 - 데이터의 일관성과 ACID(Atomicity, Consistency, Isolation, Durability) 특성이 중요한 경우
+  - MongoDB의 경우 데이터 업데이트 중 장애 발생 시, 데이터 손실 가능성이 존재함
 
 #### 고정된 데이터 스키마
 - 데이터 구조가 고정되어 있는 경우
