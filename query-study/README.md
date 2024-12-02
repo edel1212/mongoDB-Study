@@ -67,10 +67,23 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 
 ## 계정
 
+### Role 종류
+
+| 역할 (Role)      | 설명                                                          |
+|-------------------|---------------------------------------------------------------|
+| `read`           | 지정된 데이터베이스에 대한 읽기 권한                          |
+| `readWrite`      | 지정된 데이터베이스에 대한 읽기 및 쓰기 권한                  |
+| `dbAdmin`        | 데이터베이스 관리 권한 (인덱스 관리, 통계 조회 등)            |
+| `userAdmin`      | 사용자 관리 권한                                              |
+| `clusterAdmin`   | 클러스터 관리 권한                                           |
+| `root`           | 모든 권한 (슈퍼유저)                                         |
+
+
 ### 계정 생성
 - admin Database 선택
   - `use admin`
 - 계정 생성
+	- **"db"가 "admin"** 이기에 **모든 Database에 권한**을 갖는다 	
   ```javascript
   db.createUser(
   {
@@ -81,6 +94,20 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 	]
   }
   ```
+
+### 계정 삭제
+> 삭제할 대상이 있는 Database 선택
+- `db.dropUser("{{삭제 대상 ID}}");`
+
+### 계정 정보 수정
+> 변경할 대상이 있는 Database 선택
+- ```javascript
+  db.updateUser("{{대상 ID}}", {
+    pwd: "{{변경할 PW}}", // 변경할 비밀번호 - optional
+    roles: [ { role: "{{지정 권한}}", db: "<database_name>" } ] // 변경할 권한 - optional
+  });
+  ```
+
 
 ### 계정 목록 확인
 - `db.getUsers()`
