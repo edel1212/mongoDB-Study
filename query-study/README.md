@@ -22,10 +22,14 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 - MongoDB 접속
   - `mongosh -u root -p`
 
+## Database
+
 ### Database 목록 확인
 - `show dbs`
   - 해당 명려어 사용시 미리 만들어진 3개의 Database를 확인 할 수 있음
+  - 
     ![img.png](img.png)
+    
   - 각각의 설명
     - admin 
       - 관리용 데이터베이스 (권한 및 클러스터 설정). 루트 데이터베이스로 사용
@@ -49,8 +53,19 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
     - 데이터베이스 "암시적 생성" 상태이기 때문임 MongoDB는 Collection을 추가 시 진짜 Database가 생성된다.
   - "데이터베이스를 생성한다"기보다는 "선택한다"는 의미함.
 
-### 계정 목록 확인
-- `db.getUsers()`
+### Database 삭제
+> 삭제할 Database 이동
+- `db.dropDatabase();'
+
+### Database 확인
+- 현재 Database 확인
+	- `db`
+- 내가 만든 Database List 확인
+	- `show dbs`
+
+</hr>
+
+## 계정
 
 ### 계정 생성
 - admin Database 선택
@@ -66,3 +81,9 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 	]
   }
   ```
+
+### 계정 목록 확인
+- `db.getUsers()`
+
+
+
