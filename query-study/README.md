@@ -112,5 +112,31 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 ### 계정 목록 확인
 - `db.getUsers()`
 
+</hr>
 
+## Collection 
 
+### Collection 생성
+- 명령어 : `db.createCollection(name, [options]) `
+- 기본 생성
+ 	- `db.createCollection("생성할 Collectio명")`
+- 옵션 추가 생성
+	- 옵션 종류
+ 		-  capped :  true 로 설정 시 **고정된 크기(fixed size)를 가진 Collection으로 만들어짐**
+   			-  size 가 초과되면 **가장 오래된 데이터를 덮어 씌움**
+      			- true로 설정하면 size 값을 꼭 설정해야 함
+         	- autoIndexId : true로 설정하면, _id 필드에 **index를 자동으로 생성** (Default : false)
+          	- size :  Capped collection 사용 시 컬렉션의 최대 사이즈(maximum size)를 ~ bytes로 지정
+           	- max :  COllection에 **추가 할 수 있는 최대 갯수를 설정**
+	-  ```javascript
+    	   db.createCollection("articles", {
+		capped: true,
+		autoIndex: true,
+		size: 6142800,
+		max: 10000
+           })
+	   ```
+    
+### Collection 삭제
+- 명령어 : `db.Collection명.drop() `
+  
