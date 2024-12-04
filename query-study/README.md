@@ -114,7 +114,7 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 
 </hr>
 
-## Collection 
+## Collection (Table)
 
 ### Collection 생성
 - 명령어 : `db.createCollection(name, [options]) `
@@ -140,3 +140,29 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 ### Collection 삭제
 - 명령어 : `db.Collection명.drop() `
   
+## Document (Row - 데이터)
+
+### Document 생성
+- 명령어 : `db.COLLECTION_NAME.insertOne(document)` , `db.COLLECTION_NAME.insertMany(document)`
+
+  - Ex)  `db.foo.insertOne({"name": "유정호", "age": 120})` ,  `db.foo.insertMany([ {"name": "감", "age": 20}, {"name": "사과", "age": 30} ])` 
+
+### Document 조회
+- 명령어 
+  - 전체 조회  `db.COLLECTION_NAME.find([OPTIONS]) `
+    - EX)
+      -  `db.foo.find();` :  전체 조회
+      -  `db.foo.find({name : "유정호"});` : name이 "유정호"만 조회
+      - `db.foo.find({ name: "yoo" }, { age: 0, name: 0 });`  name이 "유정호"만 조회하면서  name과 age를 제외하고 보여줌
+        - 0 : 숨김 , 1 : 보여짐 >> 🤯 0, 1 혼합 사용 불가능하다!!
+  - 단건 조회  `db.COLLECTION_NAME.findOne([OPTIONS]) `
+
+
+### Document 삭제
+- 명령어 
+  - 단건 삭제 : `db.COLLECTION_NAME.deleteOne( 조건값 )`
+    - Ex) `db.book.deleteOne({name : "유정호"})`
+  - 여러개  삭제 : `db.COLLECTION_NAME.deleteOne( 조건값 )`
+    - - Ex) `db.book.deleteMany({name : "유정호"})`
+
+// TODO Document Update
