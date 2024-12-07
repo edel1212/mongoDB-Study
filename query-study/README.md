@@ -150,7 +150,7 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 ### Document 조회
 ```properties
 # ℹ️ pretty()를 뒤에 붙이면 보기 좋게 정리 되어 나옴
-#   ㄴ> Ex) db.COLLECTION_NAME.find([OPTIONS]).pretty()
+#   ㄴ> Ex) db.COLLECTION_NAME.find([OPTIONS]).pretty()가
 ```
 - 명령어
     - 전체 조회  `db.COLLECTION_NAME.find([OPTIONS]) ` 
