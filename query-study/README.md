@@ -177,6 +177,11 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
     -  name이 "yoo" 이고 age랑 name을 제외
     - `db.foo.find({ name: "yoo" }, { age: 0, name: 0 });`
         - 0 : 숨김 , 1 : 보여짐 >> 🤯 0, 1 혼합 사용 불가능
+##### $slice 연산자
+- $slice 연산자는 Document **배열의 limit 설정** 조회
+- 예시
+  - title 값이 article03 인 데이터의 댓글(comments)은 하나만 보이게 출력
+    - `db.book.find( { title: "article03" }, { comments: { $slice: 1 } } )`
 
 #### 비교(Comparison) 연산자
 
