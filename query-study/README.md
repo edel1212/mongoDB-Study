@@ -159,13 +159,24 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 #   ㄴ> Ex) db.COLLECTION_NAME.find([OPTIONS]).pretty()가능하다
 ```
 - 기본 조회 명령어
-    - 전체 조회  `db.COLLECTION_NAME.find([OPTIONS]) ` 
+    - 전체 조회  `db.COLLECTION_NAME.find([OPTIONS])` 
         - EX)
-            -  `db.foo.find();` :  전체 조회
-            -  `db.foo.find({name : "유정호"});` : name이 "유정호"만 조회
-            - `db.foo.find({ name: "yoo" }, { age: 0, name: 0 });`  name이 "유정호"만 조회하면서  name과 age를 제외하고 보여줌
-                - 0 : 숨김 , 1 : 보여짐 >> 🤯 0, 1 혼합 사용 불가능하다!!
+            -  `db.foo.find();` :  전체 조회 
     - 단건 조회  `db.COLLECTION_NAME.findOne([OPTIONS]) ` 
+
+### projection Option
+```properties
+# ℹ️ find({ where 옵션 }, {  조회 필드 옵션 }) 메소드의 두번째 parameter를 의미한다.
+#    ㄴ 쿼리의 결과값에서 보여질 field를 정함
+#    ㄴ 보여줄 필드를 true, false로 지정
+#       ㄴ ⭐️ ture를 사용하면 ture만 설정하자 혼잡 적용 X
+```
+- 조회 예시
+    - 필드 명이 "article03"인 조회 목록에서 title을 제외한 나머지를 조회
+        - `db.book.find({ title: "article03" }, { title : false }  );`
+    -  name이 "yoo" 이고 age랑 name을 제외
+    - `db.foo.find({ name: "yoo" }, { age: 0, name: 0 });`
+        - 0 : 숨김 , 1 : 보여짐 >> 🤯 0, 1 혼합 사용 불가능
 
 #### 비교(Comparison) 연산자
 
@@ -224,8 +235,6 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
     - 내장형으로 변경
       -  `db.book.find({ writer: { $regex: /pha/ix } })`
 
-
-
 #### $elemMatch 연산자
 ```properties
 # ℹ️ 배열 내 포함하는 내용이 있을 경우 조회
@@ -233,6 +242,15 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 - 조회 예시
   - comments(배열) 중 name이 “Charlie” 있는 데이터
     - `db.book.find({ comments : {  $elemMatch : {  name : "Charlie"}  } })`
+
+#### $exists 연산자
+```properties
+# ℹ️ 해당 key 자체가 존재 하는지 안 하는지 boolean 값을 통해 조회 가능
+#    ㄴ> null 을 찾으려면  `{$eq : null}` 혹은 `<field>: null`을 사용
+```
+- 조회 예시
+    - comments 데이터가 존재하지 않는 경우
+      - `db.book.find({ comments: { $exists: false } })`
 
 #### $size 연산자
 ```properties
