@@ -142,7 +142,13 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 
 ## Document (Row - 데이터)
 
-### Document 생성
+### Document 추가(Insert)
+```properties
+# ℹ️ Document Insert 시 자동으로 _id가 증가되는것을 확인 있다.
+#    - 해당 값은 값을 각각의 Document를 식별하기 위한 PK이며 필수값이다.
+#      ㄴ _Id를 지정 주입 가능하나 중복된 값은 불가능   
+#          ㄴ db.users.insertOne({{ "_id": "Hi_Im_yoo", "name": "Alice", })
+```
 - 명령어 : `db.COLLECTION_NAME.insertOne(document)` , `db.COLLECTION_NAME.insertMany(document)`
 
     - Ex)  `db.foo.insertOne({"name": "유정호", "age": 120})` ,  `db.foo.insertMany([ {"name": "감", "age": 20}, {"name": "사과", "age": 30} ])`
@@ -150,9 +156,9 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 ### Document 조회
 ```properties
 # ℹ️ pretty()를 뒤에 붙이면 보기 좋게 정리 되어 나옴
-#   ㄴ> Ex) db.COLLECTION_NAME.find([OPTIONS]).pretty()가
+#   ㄴ> Ex) db.COLLECTION_NAME.find([OPTIONS]).pretty()가능하다
 ```
-- 명령어
+- 기본 조회 명령어
     - 전체 조회  `db.COLLECTION_NAME.find([OPTIONS]) ` 
         - EX)
             -  `db.foo.find();` :  전체 조회
@@ -160,8 +166,27 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
             - `db.foo.find({ name: "yoo" }, { age: 0, name: 0 });`  name이 "유정호"만 조회하면서  name과 age를 제외하고 보여줌
                 - 0 : 숨김 , 1 : 보여짐 >> 🤯 0, 1 혼합 사용 불가능하다!!
     - 단건 조회  `db.COLLECTION_NAME.findOne([OPTIONS]) ` 
-    
 
+#### 비교(Comparison) 연산자
+
+| 연산자   | 설명                           | 부등호 표현     | 사용 예시                                         |
+|----------|--------------------------------|-----------------|--------------------------------------------------|
+| `$eq`    | 주어진 값과 일치하는 값        | `=`             | `{ age: { $eq: 25 } }` (age가 25인 문서 찾기)     |
+ | `$ne`    | 주어진 값과 일치하지 않는 값    | `!=`            | `{ age: { $ne: 25 } }` (age가 25가 아닌 문서 찾기)|
+| `$gt`    | 주어진 값보다 큰 값            | `>`             | `{ age: { $gt: 25 } }` (age가 25보다 큰 문서 찾기)|
+| `$gte`   | 주어진 값보다 크거나 같은 값    | `>=`            | `{ age: { $gte: 25 } }` (age가 25 이상인 문서 찾기)|
+| `$lt`    | 주어진 값보다 작은 값          | `<`             | `{ age: { $lt: 25 } }` (age가 25보다 작은 문서 찾기)|
+| `$lte`   | 주어진 값보다 작거나 같은 값    | `<=`            | `{ age: { $lte: 25 } }` (age가 25 이하인 문서 찾기)|
+| `$in`    | 주어진 배열 안에 속하는 값      | 값 리스트 포함  | `{ age: { $in: [20, 25, 30] } }` (20, 25, 30 중 하나 찾기)|
+| `$nin`   | 주어진 배열 안에 속하지 않는 값 | 값 리스트 제외  | `{ age: { $nin: [20, 25, 30] } }` (20, 25, 30 제외)|
+
+- 조건 조회 예시
+  - likes 30 초과 40 미만: `db.book.find({likes : {$gt : 30, $lt : 40}})`
+  - IN 조회  "Aplpha","Bravo" 가 들어있는 : `db.book.find({ writer: { $in: ["Alpha", "Bravo"] } });`
+
+
+    
+    
 
 ### Document 삭제
 - 명령어
