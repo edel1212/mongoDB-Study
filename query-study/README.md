@@ -180,13 +180,67 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 | `$in`    | 주어진 배열 안에 속하는 값      | 값 리스트 포함  | `{ age: { $in: [20, 25, 30] } }` (20, 25, 30 중 하나 찾기)|
 | `$nin`   | 주어진 배열 안에 속하지 않는 값 | 값 리스트 제외  | `{ age: { $nin: [20, 25, 30] } }` (20, 25, 30 제외)|
 
-- 조건 조회 예시
+- 조회 예시
   - likes 30 초과 40 미만: `db.book.find({likes : {$gt : 30, $lt : 40}})`
   - IN 조회  "Aplpha","Bravo" 가 들어있는 : `db.book.find({ writer: { $in: ["Alpha", "Bravo"] } });`
 
+#### 논리(Logical) 연산자
 
-    
-    
+| 연산자   | 설명                                      |
+|----------|-------------------------------------------|
+| `$or`    | **주어진 조건 중 하나라도** 참이면 참입니다. |
+| `$and`   | **주어진 모든 조건이** 참이면 참입니다.     |
+| `$not`   | **주어진 조건이** 거짓이면 참입니다.        |
+| `$nor`   | **주어진 모든 조건이** 거짓이면 참입니다.   | 
+
+- 조회 예시
+    - title 값이 “article01” 이거나, writer 값이 “Alpha” 인 Document 조회
+      - `db.book.find({ $or : [ {title : "article01"}, {writer : "Alpha"} ] })` 
+    - writer 값이 “Velopert” 이고 likes 값이 10 미만인 Document 조회
+      - `db.book.find({ $and : [ {likes : {$lt : 10}}, {writer : "Velopert"} ] })`
+
+#### $regex 연산자
+```properties
+# ℹ️ $regex 연산자를 통해 Document를 정규식을 통해 찾을 수 있다.
+#   ㄴ> ✏️ like 검색
+# { <field>: { $regex: /pattern/, $options: '<options>' } }
+# { <field>: { $regex: 'pattern', $options: '<options>' } }
+# { <field>: { $regex: /pattern/<options> } }
+# { <field>: /pattern/<options> }
+```
+- 옵션 종류
+  | **옵션** | **설명**                                                                 |
+  |----------|--------------------------------------------------------------------------|
+  | `i`      | 대소문자 무시                                                            |
+  | `m`      | 정규식에서 anchor(`^`, `$`)를 사용할 때 값에 `\n`이 있으면 무력화          |
+  | `x`      | 정규식 안에 있는 whitespace를 모두 무시                                   |
+  | `s`      | dot(`.`) 사용 시 `\n`을 포함해서 매치                                    |
+
+- 조회 예시
+  - 적성자에 가운데 "pha"가 포함된 데이터
+    -  `db.book.find({ writer : { $regex : /pha/ }   })`
+  - 적성자에 가운데 "pha"가 포함된 데이터 대소문자 구분 X, trim 적용
+    -  `db.book.find({ writer: { $regex: /pha/, $options: "ix" } })`
+    - 내장형으로 변경
+      -  `db.book.find({ writer: { $regex: /pha/ix } })`
+
+
+
+#### $elemMatch 연산자
+```properties
+# ℹ️ 배열 내 포함하는 내용이 있을 경우 조회
+```
+- 조회 예시
+  - comments(배열) 중 name이 “Charlie” 있는 데이터
+    - `db.book.find({ comments : {  $elemMatch : {  name : "Charlie"}  } })`
+
+#### $size 연산자
+```properties
+# ℹ️ 배열의 크기를 확인
+```
+- 조회 예시
+    - comments(배열)의 크키가 1인 데이터
+        - `db.book.find({ comments: { $size: 1 } })`
 
 ### Document 삭제
 - 명령어
