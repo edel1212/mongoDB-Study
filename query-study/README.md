@@ -265,12 +265,49 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
     - comments(배열)의 크키가 1인 데이터
         - `db.book.find({ comments: { $size: 1 } })`
 
+
+#### 정렬 연산자
+```properties
+# ℹ️ cursor.sort( DOCUMENT )를 사용해서 정렬이 가능하다.
+#   ㄴ> 1 일 경우 오름 차순 // -1 일 경우 내림 차순
+```
+- 조회 예시
+  - id 기준 내림 차순 정렬
+    - `db.orders.find().sort( {_id : -1})`
+  - 가격, _Id만 보이게  가격 기준 오름 차순 정렬
+    - `db.orders.find({},{ amount : true }).sort( { amount : 1})`
+
+#### 개수 제한 연산자
+```properties
+# ℹ️ cursor.limit( value )을 사용해서 출력할 데이터 갯수를 제한할 때 사용됩니다.
+#    ㄴ value 파라미터는 출력 할 갯수 값 입니다.
+```
+- 조회 예시
+    - 3개만 보이게 조회
+        - `db.orders.find().limit(3)`
+
+#### skip 연산자
+```properties
+# ℹ️ cursor.skip( value )을 사용해서 출력 할 데이터의 시작부분을 설정할 때 사용됩니다.
+#    ㄴ value 값 갯수의 데이터를 생략하고 그 다음부터 출력합니다.
+```
+- 조회 예시
+    - 5개의 데이터를 제외 후 조회
+        - `db.orders.find().skip(5)`
+
+#### 응용 (페이징) - limit, skip 활용
+- 조회 예시
+    - 1페이지 내 10개의 개시물 조회
+        - `db.orders.find().sort( { "_id": -1 } ).skip(( page - 1) *  10 ).limit( 10 );`
+
 ### Document 삭제
 - 명령어
     - 단건 삭제 : `db.COLLECTION_NAME.deleteOne( 조건값 )`
         - Ex) `db.book.deleteOne({name : "유정호"})`
     - 여러개  삭제 : `db.COLLECTION_NAME.deleteOne( 조건값 )`
-        - - Ex) `db.book.deleteMany({name : "유정호"})`
+        - Ex) `db.book.deleteMany({name : "유정호"})`
+    - Document  전체 삭제
+        - Ex) `db.book.deleteMany({})`
 
 
 ### Document 업데이트
