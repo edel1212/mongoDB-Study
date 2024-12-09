@@ -175,7 +175,7 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
     - 필드 명이 "article03"인 조회 목록에서 title을 제외한 나머지를 조회
         - `db.book.find({ title: "article03" }, { title : false }  );`
     -  name이 "yoo" 이고 age랑 name을 제외
-    - `db.foo.find({ name: "yoo" }, { age: 0, name: 0 });`
+    - `db.book.find({ name: "yoo" }, { age: 0, name: 0 });`
         - 0 : 숨김 , 1 : 보여짐 >> 🤯 0, 1 혼합 사용 불가능
 ##### $slice 연산자
 - $slice 연산자는 Document **배열의 limit 설정** 조회
@@ -254,16 +254,16 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 #    ㄴ> null 을 찾으려면  `{$eq : null}` 혹은 `<field>: null`을 사용
 ```
 - 조회 예시
-    - comments 데이터가 존재하지 않는 경우
-      - `db.book.find({ comments: { $exists: false } })`
+  - comments 데이터가 존재하지 않는 경우
+    - `db.book.find({ comments: { $exists: false } })`
 
 #### $size 연산자
 ```properties
 # ℹ️ 배열의 크기를 확인
 ```
 - 조회 예시
-    - comments(배열)의 크키가 1인 데이터
-        - `db.book.find({ comments: { $size: 1 } })`
+  - comments(배열)의 크키가 1인 데이터
+      - `db.book.find({ comments: { $size: 1 } })`
 
 
 #### 정렬 연산자
@@ -283,8 +283,8 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 #    ㄴ value 파라미터는 출력 할 갯수 값 입니다.
 ```
 - 조회 예시
-    - 3개만 보이게 조회
-        - `db.orders.find().limit(3)`
+  - 3개만 보이게 조회
+    - `db.orders.find().limit(3)`
 
 #### skip 연산자
 ```properties
@@ -292,22 +292,120 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 #    ㄴ value 값 갯수의 데이터를 생략하고 그 다음부터 출력합니다.
 ```
 - 조회 예시
-    - 5개의 데이터를 제외 후 조회
-        - `db.orders.find().skip(5)`
+  - 5개의 데이터를 제외 후 조회
+    - `db.orders.find().skip(5)`
 
 #### 응용 (페이징) - limit, skip 활용
 - 조회 예시
-    - 1페이지 내 10개의 개시물 조회
-        - `db.orders.find().sort( { "_id": -1 } ).skip(( page - 1) *  10 ).limit( 10 );`
+  - `orders` 컬렉션에서 `_id`를 기준으로 내림차순 정렬한 후, 특정 페이지의 데이터를 가져오는 쿼리
+      - ```javascript
+        db.orders.find()                            // 전체 데이터 조회
+            .sort( { "_id": -1 } )                  // 내림차순 정렬
+            .skip( (page - 1) * 10 )                // 페이지 스킵 (1페이지당 10개)
+            .limit(10);                             // 최대 10개 조회
+        ```
 
 ### Document 삭제
 - 명령어
-    - 단건 삭제 : `db.COLLECTION_NAME.deleteOne( 조건값 )`
-        - Ex) `db.book.deleteOne({name : "유정호"})`
-    - 여러개  삭제 : `db.COLLECTION_NAME.deleteOne( 조건값 )`
-        - Ex) `db.book.deleteMany({name : "유정호"})`
-    - Document  전체 삭제
-        - Ex) `db.book.deleteMany({})`
+  - 단건 삭제 : `db.COLLECTION_NAME.deleteOne( 조건값 )`
+    - Ex) `db.book.deleteOne({name : "유정호"})`
+  - 여러개  삭제 : `db.COLLECTION_NAME.deleteOne( 조건값 )`
+    - Ex) `db.book.deleteMany({name : "유정호"})`
+  - Document  전체 삭제
+    - Ex) `db.book.deleteMany({})`
 
 
 ### Document 업데이트
+```properties
+# ℹ️  db.COLLECTION.updateOne( { 조건 }  , $set : { 변경 값 } ), updateMany()를 사용해서 Document의 특정 값을 변경 가능
+#    ㄴ 특정 필드 값만 변경 $set 명령어 사용
+#    ㄴ 특정 필드 제거 $unset 명령어 사용
+#
+# ℹ️  db.COLLECTION.replaceOne( 조건 , 변경 값 ), replaceMany()를 사용해서 Document 값 자체를 변경 가능
+#
+# Sample Data
+# [
+#   { name: "Abet", age: 19 },
+#   { name: "Betty", age: 20 },
+#   { name: "Charlie", age: 23, skills: [ "mongodb", "nodejs"] },
+#   { name: "David", age: 23, score: 20 }
+# ]
+```
+
+#### 특정 field 업데이트 하기
+- 예시
+  - 단건 특정 **필드 업데이트**
+    - "Abet"의 age를 "45"살로 변경
+      - ```javascript
+        db.people.updateOne(
+          { name: "Abet" },              // 조건
+          { $set: { age: 45 } }          // 업데이트 내용
+          )
+        ```
+    - "Abet"의 age를 "20"살로 변경 하고 종교 필드를 추가
+      - ```javascript
+        db.people.updateOne(
+            { name: "Abet" },                      // 조건
+            { $set: { age: 20, religion: "none" } } // 업데이트 내용
+        )    
+        ```
+  - 찾는 Document 가 없을 경우 **자동 추가**
+    - "Elly" 데이터를 변경 **없을 경우 추가**
+      - ```javascript
+        db.people.updateOne(
+          { name: "Elly" },                    // 조건
+          { $set: { name: "Elly", age: 17 } }, // 업데이트 내용
+          { upsert: true }                     // 옵션
+        )
+        ```
+  - 단건 특정 **필드 제거**
+      - "Abet"의 `age` 필드를 제거
+        - ```javascript
+          db.people.updateOne(
+            { name: "Abet" },              // 조건
+            { $unset: { age: true } }      // 필드 제거
+          )
+          ```
+  - 단건 **replace**
+      - "Betty" 문서를 **이름을 "yoo"**, **나이를 "100"살**, **취미를 "coding"**으로 변경
+        - ```javascript
+          db.people.updateOne(
+            { name: "Betty" },                             // 조건
+            { name: "yoo", age: 100, hobby: ["coding"] }   // 새 문서 (replace)
+          )
+          ```
+  - 특정 조건에 맞는 여러 데이터 **필드 업데이트**
+    - age가 20 보다 낮거나 같은 document의 score를 9999로 설정
+        - ```javascript
+          db.people.updateMany(
+            { age: { $lte: 20 } },            // 조건
+            { $set: { score: 9999 } }         // 업데이트 내용
+          )
+          ```
+           
+#### 배열 값 추가
+```properties
+# ℹ️ $push 명령어를 통해 배열 내 값을 추가
+#     ㄴ ✨ 중복을 방지하고 싶다면 $addToSet 사용
+#
+#   해당 명령어도 updateOne, updateMany를 구분해서 사용하면 단건 or 다건 업데이트 가능
+```
+- 예시
+  - (중복 허용) name이 "Charlie"인 데이터에 skills에 "nextjs"를 추가
+    - ```javascript
+      db.people.updateOne( 
+        { name: "Charlie" },             // "name"이 "Charlie"인 문서 찾기
+        {
+          $push: { skills: "nextJs" }    // "skills" 배열에 "nextJs" 값 추가 (중복되지 않으면 추가)
+         }
+      );
+      ```
+  - (중복 X) name이 "Charlie"인 데이터에 skills에 "nextjs"를 추가
+      - ```javascript
+      db.people.updateOne( 
+        { name: "Charlie" },                 // "name"이 "Charlie"인 문서 찾기
+        {
+          $addToSet: { skills: "nextJs" }    // "skills" 배열에 "nextJs" 값 추가 (중복되지 않으면 추가)
+         }
+      );
+      ```
