@@ -466,3 +466,34 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
             }
           )
         ```
+
+## 집계 함수
+
+```javascript
+/**
+ * 🤯 find와 aggregate 차이
+ * >> find 메서드
+ *  - 용도 :  단순히 데이터 조회(검색) 및 필터링을 수행할 때 사용합니다.
+ *  - EX )  db.sales.find({
+ *              date: { $gte: new Date("2024-12-01"), $lte: new Date("2024-12-02") }
+ *          }); 
+ *        
+ *  
+ * >> aggregate 메서드
+ *  - 복잡한 데이터 변환, 집계, 계산을 수행할 때 사용합니다.
+ *  - EX )  db.sales.aggregate([
+ *            { $match: { date: { $gte: new Date("2024-12-01"), $lte: new Date("2024-12-02") } } }
+ *          ]);
+ *
+ * **/
+// ℹ️ 범위 내의 데이터를 집계 함수로 값을 구하는 연습
+// 예제 사용 데이터
+db.sales.insertMany([
+  { date: new Date("2024-12-01"), store: "A", sales: 100, items: 5 },
+  { date: new Date("2024-12-01"), store: "B", sales: 200, items: 10 },
+  { date: new Date("2024-12-02"), store: "A", sales: 150, items: 7 },
+  { date: new Date("2024-12-02"), store: "B", sales: 300, items: 12 },
+  { date: new Date("2024-12-03"), store: "A", sales: 250, items: 8 },
+  { date: new Date("2024-12-03"), store: "B", sales: 100, items: 4 }
+]);
+```
