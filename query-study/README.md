@@ -340,7 +340,7 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
         db.people.updateOne(
           { name: "Abet" },              // 조건
           { $set: { age: 45 } }          // 업데이트 내용
-          )
+        )
         ```
     - "Abet"의 age를 "20"살로 변경 하고 종교 필드를 추가
       - ```javascript
@@ -401,7 +401,7 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
       );
       ```
   - (중복 X) name이 "Charlie"인 데이터에 skills에 "nextjs"를 추가
-      - ```javascript
+    - ```javascript
       db.people.updateOne( 
         { name: "Charlie" },                 // "name"이 "Charlie"인 문서 찾기
         {
@@ -451,18 +451,18 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
           )
         ```
   - 다건
-  - Charlie 의 skills 중 "angularjs" 와 "java" 제거 
-    - ```javascript
-      db.people.updateOne(
-          {
-            name : "Charlie"                     // 대상
-          }
-          , {
-            $pull : {                            // 제거
-              skills : {                         // 필드 지정
-                $in : ["angularjs", "java"]      // 포함 내용 지정
-              } 
+    - Charlie 의 skills 중 "angularjs" 와 "java" 제거 
+      - ```javascript
+        db.people.updateOne(
+            {
+              name : "Charlie"                     // 대상
             }
-          }
-        )
-      ```
+            , {
+              $pull : {                            // 제거
+                skills : {                         // 필드 지정
+                  $in : ["angularjs", "java"]      // 포함 내용 지정
+                } 
+              }
+            }
+          )
+        ```
