@@ -417,7 +417,7 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
 #      ㄴ 해당 명령어 또한 중복을 제거 해서 추가하라면 $addToSet를 사용
 ```
 - 예시
-  - "Charlie" 의 skills에 "c++" 와 "java" 를 추가
+  - Charlie 의 skills에 "c++" 와 "java" 를 추가
     - ```javascript
       db.people.updateOne(
         { name : "Charlie" }              // 대상 지정
@@ -427,4 +427,42 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
                }
         } }
       )
+      ```
+
+#### 배열 내 값 제거
+```properteis
+# $pull 명령어를 통해 배열 내 값을 제거 할 수 있다.
+#  ㄴ 여러개의 값을 제거하기 위해선 $in 명령어를 추가하여 하나 이상 제거 가능
+```
+
+- 예시
+  - 단건
+    - Charlie 의 skills 중 "mongodb" 제거 
+      - ```javascript
+        db.people.updateOne(
+            {
+              name : "Charlie"        // 대상
+            }
+            , {
+              $pull : {               // 제거
+                skills : "mongodb"    // 필드 및 값 지정
+              }
+            }
+          )
+        ```
+  - 다건
+  - Charlie 의 skills 중 "angularjs" 와 "java" 제거 
+    - ```javascript
+      db.people.updateOne(
+          {
+            name : "Charlie"                     // 대상
+          }
+          , {
+            $pull : {                            // 제거
+              skills : {                         // 필드 지정
+                $in : ["angularjs", "java"]      // 포함 내용 지정
+              } 
+            }
+          }
+        )
       ```
