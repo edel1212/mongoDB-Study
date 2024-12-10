@@ -409,3 +409,22 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
          }
       );
       ```
+
+#### 배열 여러 개의 값 추가
+```proplerties
+# ℹ️ $push 명령어만을 사용하면 해당 배열 내 한건의 데이터만 추가가 가능하다
+#   ㄴ $push 명령어와 $each 명령어를 함께 사용하면 배열에 하나 이상의 데이터를 추가 할 수 있다. 
+#      ㄴ 해당 명령어 또한 중복을 제거 해서 추가하라면 $addToSet를 사용
+```
+- 예시
+  - "Charlie" 의 skills에 "c++" 와 "java" 를 추가
+    - ```javascript
+      db.people.updateOne(
+        { name : "Charlie" }              // 대상 지정
+        , { $push : {
+              skills : {                  // set 필드 지정
+                  $each : ["c++", "java"] // $each를 사용해 하나 이상을 추가
+               }
+        } }
+      )
+      ```
