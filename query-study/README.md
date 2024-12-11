@@ -618,3 +618,26 @@ db.sales.insertMany([
         { $count: "recordCount" }
       ])
       ```
+### 응용 - 한번에 전부 집계 쿼리
+```javascript
+/**
+ * 🤯 $count 함수의 경우 $group과 같이 사용이 불가능함
+ *      ㄴ 현재까지의 파이프라인에서 문서의 개수를 계산하고 새로운 문서를 반환하기 때문
+*/
+db.sales.aggregate([
+  {
+    $match : {
+      date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+    }
+  }
+  , {
+    $group : {
+      _id : null
+      , min : {$min : "$sales"}
+      , max : {$max : "$sales"}
+      , avg : {$avg : "$sales"}
+      , sum : {$sum : "$sales"}
+    }
+  }
+])
+```
