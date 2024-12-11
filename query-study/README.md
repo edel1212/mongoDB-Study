@@ -497,3 +497,124 @@ db.sales.insertMany([
   { date: new Date("2024-12-03"), store: "B", sales: 100, items: 4 }
 ]);
 ```
+
+### 총합 - $sum
+```properties
+# ℹ️ 기본적으로 집계 함수의 경우 gorup으로 묶여야 한다.
+#  ㄴ RDB의 경우 컬럼에 대상이 없을 경우에는 gorup by를 안하지만 mongo는 없으면 null로 처리 필요
+#  ㄴ _id 라는 필드에 그룹화할 대상을 지정할 수 있다.
+#  ㄴ "$필드명" 을 사용하여 대상 지정
+```
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales) 총합
+    - ```javascript
+      db.sales.aggregate([
+        {
+          // 집계 함수 조회 조건
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          // 그룹화 해서 결과를 냄
+          $group : {
+            // 그룹화 할 대상 구분 X
+            _id : null
+            // 변환 file명 지정 및 $sum 함수를 이용하여 대상 지정 "$필드명" 사용
+            , totalValue : {$sum : "$sales"}
+          }
+        }
+      ])
+      ```
+  - "store"별 2024-12-01 ~ 2024-12-02 까지의 매출(sales) 총합
+    - ```javascript
+      db.sales.aggregate([
+        {
+          // 집계 함수 조회 조건
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          // 그룹화 해서 결과를 냄
+          $group : {
+            // 스코어 값으로 그룹화
+            _id : "$store"
+            // 변환 file명 지정 및 $sum 함수를 이용하여 대상 지정 "$필드명" 사용
+            , totalValue : {$sum : "$sales"}
+          }
+        }
+      ])
+      ```
+
+### 최소 값 - $min
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales)의 최소 값
+    - ```javascript
+      db.sales.aggregate([
+        {
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          $group : {
+            _id : null
+            , minValue : {$min : "$sales"}
+          }
+        }
+      ])
+      ```
+
+### 최대 값 - $max
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales)의 최대 값
+    - ```javascript
+      db.sales.aggregate([
+        {
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          $group : {
+            _id : null
+            , minValue : {$max : "$sales"}
+          }
+        }
+      ])
+      ```
+
+### 평균 값 - $avg
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales)의 평균 값
+    - ```javascript
+      db.sales.aggregate([
+        {
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          $group : {
+            _id : null
+            , minValue : {$avg : "$sales"}
+          }
+        }
+      ])
+      ```
+
+### 개수 - $count
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales)의 개수
+    - ```javascript
+      db.sales.aggregate([
+        {
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        // 개수의 경우 기존의 집계 함수와 다르게 만듬
+        { $count: "recordCount" }
+      ])
+      ```
