@@ -1,0 +1,5 @@
+spring:
+  data:
+    mongodb:
+      # ⭐️ 관리자 권한을 갖는 계정일 경우 "?authSource=admin" 설정 필수
+      uri: mongodb://admin:123@localhost:27017/book?authSource=admin
