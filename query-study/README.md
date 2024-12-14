@@ -340,7 +340,7 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
         db.people.updateOne(
           { name: "Abet" },              // 조건
           { $set: { age: 45 } }          // 업데이트 내용
-          )
+        )
         ```
     - "Abet"의 age를 "20"살로 변경 하고 종교 필드를 추가
       - ```javascript
@@ -401,7 +401,7 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
       );
       ```
   - (중복 X) name이 "Charlie"인 데이터에 skills에 "nextjs"를 추가
-      - ```javascript
+    - ```javascript
       db.people.updateOne( 
         { name: "Charlie" },                 // "name"이 "Charlie"인 문서 찾기
         {
@@ -409,3 +409,235 @@ docker run -d --name mongodb -v C:\Users\edel1\Desktop\docker-volume\mongo:/data
          }
       );
       ```
+
+#### 배열 여러 개의 값 추가
+```proplerties
+# ℹ️ $push 명령어만을 사용하면 해당 배열 내 한건의 데이터만 추가가 가능하다
+#   ㄴ $push 명령어와 $each 명령어를 함께 사용하면 배열에 하나 이상의 데이터를 추가 할 수 있다. 
+#      ㄴ 해당 명령어 또한 중복을 제거 해서 추가하라면 $addToSet를 사용
+```
+- 예시
+  - Charlie 의 skills에 "c++" 와 "java" 를 추가
+    - ```javascript
+      db.people.updateOne(
+        { name : "Charlie" }              // 대상 지정
+        , { $push : {
+              skills : {                  // set 필드 지정
+                  $each : ["c++", "java"] // $each를 사용해 하나 이상을 추가
+               }
+        } }
+      )
+      ```
+
+#### 배열 내 값 제거
+```properteis
+# $pull 명령어를 통해 배열 내 값을 제거 할 수 있다.
+#  ㄴ 여러개의 값을 제거하기 위해선 $in 명령어를 추가하여 하나 이상 제거 가능
+```
+
+- 예시
+  - 단건
+    - Charlie 의 skills 중 "mongodb" 제거 
+      - ```javascript
+        db.people.updateOne(
+            {
+              name : "Charlie"        // 대상
+            }
+            , {
+              $pull : {               // 제거
+                skills : "mongodb"    // 필드 및 값 지정
+              }
+            }
+          )
+        ```
+  - 다건
+    - Charlie 의 skills 중 "angularjs" 와 "java" 제거 
+      - ```javascript
+        db.people.updateOne(
+            {
+              name : "Charlie"                     // 대상
+            }
+            , {
+              $pull : {                            // 제거
+                skills : {                         // 필드 지정
+                  $in : ["angularjs", "java"]      // 포함 내용 지정
+                } 
+              }
+            }
+          )
+        ```
+
+## 집계 함수
+
+```javascript
+/**
+ * 🤯 find와 aggregate 차이
+ * >> find 메서드
+ *  - 용도 :  단순히 데이터 조회(검색) 및 필터링을 수행할 때 사용합니다.
+ *  - EX )  db.sales.find({
+ *              date: { $gte: new Date("2024-12-01"), $lte: new Date("2024-12-02") }
+ *          }); 
+ *        
+ *  
+ * >> aggregate 메서드
+ *  - 복잡한 데이터 변환, 집계, 계산을 수행할 때 사용합니다.
+ *  - EX )  db.sales.aggregate([
+ *            { $match: { date: { $gte: new Date("2024-12-01"), $lte: new Date("2024-12-02") } } }
+ *          ]);
+ *
+ * **/
+// ℹ️ 범위 내의 데이터를 집계 함수로 값을 구하는 연습
+// 예제 사용 데이터
+db.sales.insertMany([
+  { date: new Date("2024-12-01"), store: "A", sales: 100, items: 5 },
+  { date: new Date("2024-12-01"), store: "B", sales: 200, items: 10 },
+  { date: new Date("2024-12-02"), store: "A", sales: 150, items: 7 },
+  { date: new Date("2024-12-02"), store: "B", sales: 300, items: 12 },
+  { date: new Date("2024-12-03"), store: "A", sales: 250, items: 8 },
+  { date: new Date("2024-12-03"), store: "B", sales: 100, items: 4 }
+]);
+```
+
+### 총합 - $sum
+```properties
+# ℹ️ 기본적으로 집계 함수의 경우 gorup으로 묶여야 한다.
+#  ㄴ RDB의 경우 컬럼에 대상이 없을 경우에는 gorup by를 안하지만 mongo는 없으면 null로 처리 필요
+#  ㄴ _id 라는 필드에 그룹화할 대상을 지정할 수 있다.
+#  ㄴ "$필드명" 을 사용하여 대상 지정
+```
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales) 총합
+    - ```javascript
+      db.sales.aggregate([
+        {
+          // 집계 함수 조회 조건
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          // 그룹화 해서 결과를 냄
+          $group : {
+            // 그룹화 할 대상 구분 X
+            _id : null
+            // 변환 file명 지정 및 $sum 함수를 이용하여 대상 지정 "$필드명" 사용
+            , totalValue : {$sum : "$sales"}
+          }
+        }
+      ])
+      ```
+  - "store"별 2024-12-01 ~ 2024-12-02 까지의 매출(sales) 총합
+    - ```javascript
+      db.sales.aggregate([
+        {
+          // 집계 함수 조회 조건
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          // 그룹화 해서 결과를 냄
+          $group : {
+            // 스코어 값으로 그룹화
+            _id : "$store"
+            // 변환 file명 지정 및 $sum 함수를 이용하여 대상 지정 "$필드명" 사용
+            , totalValue : {$sum : "$sales"}
+          }
+        }
+      ])
+      ```
+
+### 최소 값 - $min
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales)의 최소 값
+    - ```javascript
+      db.sales.aggregate([
+        {
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          $group : {
+            _id : null
+            , minValue : {$min : "$sales"}
+          }
+        }
+      ])
+      ```
+
+### 최대 값 - $max
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales)의 최대 값
+    - ```javascript
+      db.sales.aggregate([
+        {
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          $group : {
+            _id : null
+            , minValue : {$max : "$sales"}
+          }
+        }
+      ])
+      ```
+
+### 평균 값 - $avg
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales)의 평균 값
+    - ```javascript
+      db.sales.aggregate([
+        {
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        {
+          $group : {
+            _id : null
+            , minValue : {$avg : "$sales"}
+          }
+        }
+      ])
+      ```
+
+### 개수 - $count
+- 예시
+  - 2024-12-01 ~ 2024-12-02 까지의 매출(sales)의 개수
+    - ```javascript
+      db.sales.aggregate([
+        {
+          $match : {
+            date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+          }
+        },
+        // 개수의 경우 기존의 집계 함수와 다르게 만듬
+        { $count: "recordCount" }
+      ])
+      ```
+### 응용 - 한번에 전부 집계 쿼리
+```javascript
+/**
+ * 🤯 $count 함수의 경우 $group과 같이 사용이 불가능함
+ *      ㄴ 현재까지의 파이프라인에서 문서의 개수를 계산하고 새로운 문서를 반환하기 때문
+*/
+db.sales.aggregate([
+  {
+    $match : {
+      date : {  $gte : new Date("2024-12-01"), $lte : new Date("2024-12-02") }
+    }
+  }
+  , {
+    $group : {
+      _id : null
+      , min : {$min : "$sales"}
+      , max : {$max : "$sales"}
+      , avg : {$avg : "$sales"}
+      , sum : {$sum : "$sales"}
+    }
+  }
+])
+```
