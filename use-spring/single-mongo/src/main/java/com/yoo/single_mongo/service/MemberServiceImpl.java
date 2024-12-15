@@ -3,6 +3,8 @@ package com.yoo.single_mongo.service;
 import com.yoo.single_mongo.entity.Member;
 import com.yoo.single_mongo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -76,5 +78,10 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public List<Member> findByJoinedDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return memberRepository.findByJoinedDateBetween(startDate,endDate);
+    }
+
+    @Override
+    public Page<Member> getPageMembers(Pageable pageable) {
+        return memberRepository.findAll(pageable);
     }
 }

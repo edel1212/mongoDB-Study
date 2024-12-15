@@ -5,6 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -99,6 +102,22 @@ class MemberServiceImplTest {
 
         List<Member> memberList = memberService.findByJoinedDateBetween(startDate, endDate);
         System.out.println("------------------------------");
+        memberList.forEach(System.out::println);
+        System.out.println("------------------------------");
+    }
+
+    @DisplayName("페이징 조회")
+    @Test
+    void getPageList() throws Exception {
+        int page = 0 ;
+        int listSize = 10;
+        PageRequest pageable = PageRequest.of(page, listSize);
+        Page<Member> memberList = memberService.getPageMembers(pageable);
+        System.out.println("------------------------------");
+        System.out.println("총 Row 수: " + memberList.getTotalElements());
+        System.out.println("총 페이지 수: " + memberList.getTotalPages());
+        System.out.println("현재 페이지 번호: " + memberList.getNumber());
+        System.out.println("페이지 당 Row 수: " + memberList.getSize());
         memberList.forEach(System.out::println);
         System.out.println("------------------------------");
     }

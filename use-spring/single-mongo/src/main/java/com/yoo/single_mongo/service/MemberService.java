@@ -1,6 +1,8 @@
 package com.yoo.single_mongo.service;
 
 import com.yoo.single_mongo.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,5 +36,6 @@ public interface MemberService {
     List<Member> findByJoinedDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
 
+    Page<Member> getPageMembers(Pageable pageable);
 
 }
