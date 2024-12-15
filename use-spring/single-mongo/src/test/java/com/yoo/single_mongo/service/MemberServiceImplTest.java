@@ -118,7 +118,7 @@ class MemberServiceImplTest {
         System.out.println("총 페이지 수: " + memberList.getTotalPages());
         System.out.println("현재 페이지 번호: " + memberList.getNumber());
         System.out.println("페이지 당 Row 수: " + memberList.getSize());
-        memberList.forEach(System.out::println);
+        memberList.getContent().forEach(System.out::println);
         System.out.println("------------------------------");
     }
 }
