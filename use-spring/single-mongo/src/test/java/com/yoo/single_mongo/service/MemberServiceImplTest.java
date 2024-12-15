@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -22,7 +23,7 @@ class MemberServiceImplTest {
     void registerMember() throws Exception{
         int randomAge = new Random().nextInt(100) + 1;
         String randomAccountId = UUID.randomUUID().toString();
-        memberService.registerMember("randomAccountId",randomAge);
+        memberService.registerMember(randomAccountId,randomAge);
     }
 
     @DisplayName("modify Member")
@@ -62,4 +63,43 @@ class MemberServiceImplTest {
         System.out.println("------------------------------");
     }
 
+    @DisplayName("지정 나이 이상 목록 조회")
+    @Test
+    void findByAgeGreaterThanEqual() throws Exception {
+        List<Member> memberList = memberService.findByAgeGreaterThanEqual(50);
+        System.out.println("------------------------------");
+        memberList.forEach(System.out::println);
+        System.out.println("------------------------------");
+    }
+
+    @DisplayName("지정 나이 미만 목록 조회")
+    @Test
+    void findByAgeLessThan() throws Exception {
+        List<Member> memberList = memberService.findByAgeLessThan(32);
+        System.out.println("------------------------------");
+        memberList.forEach(System.out::println);
+        System.out.println("------------------------------");
+    }
+
+    @DisplayName("지정 나이 이하 목록 조회")
+    @Test
+    void findByAgeLessThanEqual() throws Exception {
+        List<Member> memberList = memberService.findByAgeLessThanEqual(32);
+        System.out.println("------------------------------");
+        memberList.forEach(System.out::println);
+        System.out.println("------------------------------");
+    }
+
+    @DisplayName("가입 날짜 범위 조회")
+    @Test
+    void findByJoinedDateBetween() throws Exception {
+        // 테스트를 위한 날짜 범위 설정
+        LocalDateTime startDate = LocalDateTime.now().minusDays(10); // 10일 전
+        LocalDateTime endDate = LocalDateTime.now(); // 현재 날짜
+
+        List<Member> memberList = memberService.findByJoinedDateBetween(startDate, endDate);
+        System.out.println("------------------------------");
+        memberList.forEach(System.out::println);
+        System.out.println("------------------------------");
+    }
 }
