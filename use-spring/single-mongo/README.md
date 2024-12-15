@@ -60,4 +60,75 @@ public class Member {
 }
 ```
 
-## 
+## MongoRepository 
+```properties
+# ℹ️ Repository패턴을 기반으로한 "인터페이스"이다. 기본적인 CRUD 메서드를 자동으로 제공
+#   - Spring JPA와 굉장히 유사하게 작동하므로 간단한 데이터 처리에 유용함
+```
+
+### 장/단 점 
+- 장점
+  - 메서드 이름만으로 커스텀 쿼리를 작성 가능
+    - (ex. findByCategory(String Category))
+  - 코드가 매우 간결하고 유지보수가 쉬움
+- 단점
+  - 복잡한 쿼리 작업에서는 제한적
+  - 커스터마이징이 어렵고 고급 기능을 구현하기에 한계가 있음
+
+### 사용 방법
+- Interface 생성 후 `extends MongoRepository<T, ID> `를 **상속** 해주면 된다.
+- Repository
+  - ```java
+    import com.yoo.single_mongo.entity.Member;
+    import org.springframework.data.mongodb.repository.MongoRepository;
+  
+    import java.time.LocalDateTime;
+    import java.util.List;
+  
+    public interface MemberRepository extends MongoRepository<Member, String> {
+        /**
+         * 입력받은 AccountId 조회
+         * */
+        Member findOneByAccountId(String accountId);
+  
+        /**
+         * 입력 받은 Age "초과"인 목록
+         * */
+        List<Member> findByAgeGreaterThan(int age);
+  
+        /**
+         * 입력 받은 Age "이상"인 목록
+         * */
+        List<Member> findByAgeGreaterThanEqual(int age);
+  
+        /**
+         * 입력 받은 Age "미만"인 목록
+         * */
+        List<Member> findByAgeLessThan(int age);
+  
+        /**
+         * 입력 받은 Age "이하"인 목록
+         * */
+        List<Member> findByAgeLessThanEqual(int age);
+  
+        /**
+         * 입력 받은 날짜 사이의 값
+         * */
+        List<Member> findByJoinedDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    }
+    ```
+  - Service
+    - ```java
+      @Service
+      @RequiredArgsConstructor
+      public class MemberServiceImpl implements MemberService {
+        private final MemberRepository memberRepository;
+      
+        // Use memberRepository method ~
+      
+        @Override
+        public Page<Member> getPageMembers(Pageable pageable) {
+            return memberRepository.findAll(pageable);
+        }
+      }
+      ```
