@@ -12,9 +12,17 @@ public interface MemberService {
     Member modifyMember(String accountId, Integer age);
     String deleteMember(String accountId);
     List<Member> getAllMember();
+    
+    /**
+     * 입력 받은 accountID 조회
+     * */
     Member findOneByAccountId(String accountId);
 
+    /**
+     * 입력 받은 Age "초과"인 목록
+     * */
     List<Member> findByAgeGreaterThan(int age);
+    
     /**
      * 입력 받은 Age "이상"인 목록
      * */
@@ -35,7 +43,9 @@ public interface MemberService {
      * */
     List<Member> findByJoinedDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
-
+    /**
+     * 페이징
+     * */
     Page<Member> getPageMembers(Pageable pageable);
 
 }
