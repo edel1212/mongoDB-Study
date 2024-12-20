@@ -60,6 +60,14 @@ public class Member {
 }
 ```
 
+## Query Log 설정
+- yml 설정을 통해 쿼리 로그 추출이 가능하다.
+```yaml
+logging:
+  level:
+    org.springframework.data.mongodb.core.MongoTemplate: DEBUG
+```
+
 ## MongoRepository 
 ```properties
 # ℹ️ Repository패턴을 기반으로한 "인터페이스"이다. 기본적인 CRUD 메서드를 자동으로 제공
@@ -255,3 +263,4 @@ public class Member {
       }
   }
   ```
+  
