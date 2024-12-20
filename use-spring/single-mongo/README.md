@@ -132,3 +132,126 @@ public class Member {
         }
       }
       ```
+
+## MongoTemplate
+
+```properties
+# ℹ️ MongoTemplate은 복잡한 쿼리나 고유 기능이 필요한 경우에 적합한 방식
+#    ㄴ MongoTemplate을 의존성 주입하여 사용 가능함
+```
+
+### 장/단 점
+- 장점
+  - 복잡한 커스텀 쿼리를 지원
+    - QueryDsl 과 **형식이 크게 다르지 않음**
+    - MongoDB의 고유 기능을 더 세밀하게 사용 가능 
+  - MongoRepository와 같은 **인터페이스 정의가 필요하지 않음**
+- 단점
+  - MongoTemplate API에 대한 깊은 이해가 필요
+  - 단순 CRUD 작업에는 오히려 복잡하고, 많은 코드 작성을 요구
+
+### 사용 방법
+- MongoTemplate 의존성 주입 수 해당 API 사용
+
+- ServiceImpl
+  ```java
+  @RequiredArgsConstructor
+  @Service
+  public class MemberWithTemplateServiceImpl implements MemberWithTemplateService{
+  
+      private final MongoTemplate mongoTemplate;
+  
+      @Override
+      public Member registerMember(String accountId, Integer age) {
+          Member member = Member.builder()
+                  .accountId(accountId)
+                  .age(age)
+                  .joinedDate(LocalDateTime.now())
+                  .build();
+          return mongoTemplate.insert(member);
+      }
+  
+      @Override
+      public Member modifyMember(String accountId, Integer age) {
+          Query query = new Query();
+          query.addCriteria(Criteria.where("accountId").is(accountId));
+          Member member = mongoTemplate.findOne(query, Member.class);
+          if (member == null) throw new RuntimeException("not found member");
+          member.setAge(age);
+          return mongoTemplate.save(member);
+      }
+  
+      @Override
+      public String deleteMember(String accountId) {
+          Query query = new Query();
+          query.addCriteria(Criteria.where("accountId").is( accountId));
+          Member member = mongoTemplate.findOne(query, Member.class);
+          if (member == null) throw new RuntimeException("not found member");
+          mongoTemplate.remove(query, Member.class);
+          return accountId + " delete Success";
+      }
+  
+      @Override
+      public List<Member> getAllMember() {
+          return mongoTemplate.findAll(Member.class);
+      }
+  
+      @Override
+      public Member findOneByAccountId(String accountId) {
+          Query query = new Query();
+          query.addCriteria(Criteria.where("accountId").is(accountId));
+          return mongoTemplate.findOne(query, Member.class);
+      }
+  
+      @Override
+      public List<Member> findByAgeGreaterThan(int age) {
+          Query query = new Query();
+          query.addCriteria(Criteria.where("age").gt(age));
+          return mongoTemplate.find(query, Member.class);
+      }
+  
+      @Override
+      public List<Member> findByAgeGreaterThanEqual(int age) {
+          Query query = new Query();
+          query.addCriteria(Criteria.where("age").gte(age));
+          return mongoTemplate.find(query, Member.class);
+      }
+  
+      @Override
+      public List<Member> findByAgeLessThan(int age) {
+          Query query = new Query();
+          query.addCriteria(Criteria.where("age").lt(age));
+          return mongoTemplate.find(query, Member.class);
+      }
+  
+      @Override
+      public List<Member> findByAgeLessThanEqual(int age) {
+          Query query = new Query();
+          query.addCriteria(Criteria.where("age").lte(age));
+          return mongoTemplate.find(query, Member.class);
+      }
+  
+      @Override
+      public List<Member> findByJoinedDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
+          Query query = new Query();
+          // 🎶 날짜 Between은 get, lte 를 사용해서 비교가 가능하다
+          query.addCriteria(Criteria.where("joinedDate").gte(startDate).lte(endDate));
+          return mongoTemplate.find(query, Member.class);
+      }
+  
+      @Override
+      public Page<Member> getPageMembers(Pageable pageable) {
+          // Query 객체 생성
+          Query query = new Query().with(pageable);
+  
+          // 전체 데이터 개수 조회
+          long total = mongoTemplate.count(query, Member.class);
+  
+          // 페이지 데이터 조회
+          List<Member> members = mongoTemplate.find(query, Member.class);
+  
+          // Page 객체로 반환
+          return new PageImpl<>(members, pageable, total);
+      }
+  }
+  ```
