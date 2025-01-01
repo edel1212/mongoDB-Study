@@ -1,4 +1,4 @@
-# SpringBoot - MongoDB 단일 연동
+# SpringBoot - MongoDB
 
 ## Dependencies 설정
 

@@ -1,5 +1,11 @@
 # MongoDB Study
 
+## 링크
+- Query - [참고](https://github.com/edel1212/mongoDB-Study/tree/main/query-study)
+- SpringBoot 연동
+  - 단일 연동 - [참고](https://github.com/edel1212/mongoDB-Study/tree/main/use-spring)
+  - Multiple 연동 - [참고](https://github.com/edel1212/springBootStudy/tree/main/dbStudy/multipleDB-mongo)
+
 ## MongoDB란?
 
 - MongoDB는 오픈소스 NoSQL 데이터베이스로, 관계형 데이터베이스(RDBMS)와 달리 문서(Document) 지향적인 데이터 모델을 사용하는 데이터베이스다.
@@ -88,3 +94,5 @@
 | **읽기/쓰기 속도**   | 빠름                         | 복잡한 쿼리에서 더 느림       |
 | **사용 사례**       | 비정형, 대규모 데이터         | 관계형, 무결성 요구 데이터    |
 | **도구 및 표준**    | JSON/BSON 기반, 신흥 도구 지원| SQL 기반, 성숙한 생태계 지원  |
+
+  
